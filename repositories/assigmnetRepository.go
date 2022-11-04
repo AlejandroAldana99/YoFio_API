@@ -37,12 +37,10 @@ func (repo AssigmentRepository) GetAssigment(AssigmentID string) (models.Assigme
 	}
 
 	logger.Performance("repository", "GetAssigment", t)
-
 	return Assigment, nil
 }
 
 func (repo AssigmentRepository) CreateAssigment(data models.AssigmentData) error {
-
 	t := time.Now()
 	_, err := repo.MongoDB.Collection("Assigments").InsertOne(context.TODO(), data)
 	if err != nil {

@@ -25,9 +25,10 @@ func (service AssigmentService) GetAssigment(AssigmentID string) (models.Assigme
 
 func (service AssigmentService) CreateAssigment(data models.AssigmentData) (models.ResponseData, error) {
 	response := models.ResponseData{
-		Notification: "",
-		Status:       "Faild",
+		Status: "Faild",
 	}
+
+	data.Combinations = calculateLoans(data.OriginalInvestment)
 
 	err := service.Repository.CreateAssigment(data)
 	if err != nil {

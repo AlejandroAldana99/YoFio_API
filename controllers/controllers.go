@@ -17,7 +17,7 @@ func (controller ControllerData) GetAssigmentData(c echo.Context) error {
 	AssigmentID := strings.ToLower(c.Param("id"))
 	data, err := controller.Service.GetAssigment(AssigmentID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err)
+		return c.JSON(http.StatusBadRequest, err)
 	}
 
 	return c.JSON(http.StatusOK, data)
@@ -27,7 +27,7 @@ func (controller ControllerData) CreateAssigmentData(c echo.Context) error {
 	dto := c.Get("dto").(models.AssigmentData)
 	response, err := controller.Service.CreateAssigment(dto)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err)
+		return c.JSON(http.StatusBadRequest, err)
 	}
 
 	return c.JSON(http.StatusOK, response)
