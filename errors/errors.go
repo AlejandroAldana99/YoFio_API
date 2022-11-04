@@ -21,10 +21,7 @@ const (
 var ServiceErrors map[int]string = map[int]string{
 	DataSourceException: "Data source exception",
 	InvalidParameters:   "Invalid parameters",
-	InvalidRole:         "Invalid Role",
-	NonCancellable:      "Non-cancellable Assigment",
 	InvalidAssigment:    "Invalid Assigment",
-	InvalidStatus:       "Invalid Status",
 }
 
 // NewAPIErrorResponse :
@@ -53,21 +50,9 @@ func HandleServiceError(err error) error {
 		status = http.StatusBadRequest
 		code = InvalidParameters
 		break
-	case "invalid role":
-		status = http.StatusUnauthorized
-		code = InvalidRole
-		break
-	case "non-cancellable Assigment":
-		status = http.StatusBadRequest
-		code = NonCancellable
-		break
 	case "invalid Assigment":
 		status = http.StatusUnauthorized
 		code = InvalidAssigment
-		break
-	case "invalid status":
-		status = http.StatusUnauthorized
-		code = InvalidStatus
 		break
 	default:
 		status = http.StatusInternalServerError

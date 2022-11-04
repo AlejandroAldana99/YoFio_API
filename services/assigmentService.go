@@ -24,11 +24,13 @@ func (service AssigmentService) GetAssigment(AssigmentID string) (models.Assigme
 }
 
 func (service AssigmentService) CreateAssigment(data models.AssigmentData) (models.ResponseData, error) {
-	response := models.ResponseData{
-		Status: "Faild",
-	}
+	response := models.ResponseData{}
 
 	data.Combinations = calculateLoans(data.OriginalInvestment)
+	if data.Combinations[0].CreditType300 <= 0 && data.Combinations[0].CreditType500 <= 0 && data.Combinations[0].CreditType700 <= 0 {
+		response.Message = "Amount impossible to invest"
+		data.NonCombinated = true
+	}
 
 	err := service.Repository.CreateAssigment(data)
 	if err != nil {
@@ -36,6 +38,24 @@ func (service AssigmentService) CreateAssigment(data models.AssigmentData) (mode
 		return response, errors.HandleServiceError(err)
 	}
 
-	response.Status = "Success"
+	response.CreditResponse = data.Combinations
 	return response, nil
+}
+
+func (service AssigmentService) GetStatistics() (models.StatisticsData, error) {
+	statistics, err := service.Repository.GetStatistics()
+	if err != nil {
+		logger.Error("services", "GetStatistics", err.Error())
+		return statistics, errors.HandleServiceError(err)
+	}
+
+	statistics.FailedAssignations = (statistics.TotalAssignations - statistics.SuccessfulAssignations)
+
+	avgSuccess := (statistics.SuccessfulAssignations / statistics.TotalAssignations)
+	avgFailed := (statistics.FailedAssignations / statistics.TotalAssignations)
+
+	statistics.AvgSuccessfulAssignations = float32(avgSuccess)
+	statistics.AvgFailedAssignations = float32(avgFailed)
+
+	return statistics, nil
 }

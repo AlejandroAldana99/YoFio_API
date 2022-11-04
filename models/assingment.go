@@ -12,7 +12,7 @@ type AssigmentData struct {
 	Owner              string             `json:"owner,omitempty"`
 	OwnerID            string             `json:"ownerid,omitempty"`
 	Combinations       []CombinationsData `json:"combinations,omitempty"`
-	NonCombinated      bool               `json:"noncombinated"`
+	NonCombinated      bool               `json:"noncombinated" default:"false"`
 }
 
 type CombinationsData struct {

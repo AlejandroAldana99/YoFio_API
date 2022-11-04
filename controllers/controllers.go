@@ -32,3 +32,12 @@ func (controller ControllerData) CreateAssigmentData(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, response)
 }
+
+func (controller ControllerData) GetStatisticsData(c echo.Context) error {
+	data, err := controller.Service.GetStatistics()
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+
+	return c.JSON(http.StatusOK, data)
+}

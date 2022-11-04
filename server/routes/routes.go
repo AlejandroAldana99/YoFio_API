@@ -55,6 +55,12 @@ func init() {
 				HandlerFunc: middleware.ValidateBody(controller.CreateAssigmentData),
 				Name:        "CreateAssigment",
 			},
+			Route{
+				Method:      http.MethodGet,
+				Pattern:     "/statistics",
+				HandlerFunc: controller.GetStatisticsData,
+				Name:        "Statistics",
+			},
 		}
 	})
 

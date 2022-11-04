@@ -1,62 +1,45 @@
 package services
 
 import (
-	"github.com/AlejandroAldana99/YoFio_API/constants"
 	"github.com/AlejandroAldana99/YoFio_API/models"
 )
 
 func calculateLoans(invest float64) []models.CombinationsData {
 	combinatios := []models.CombinationsData{}
-
-	combinatios = append(combinatios, calculateFromHighest(invest))
-	combinatios = append(combinatios, calculateFromLowest(invest))
+	combinatios = append(combinatios, assign(invest))
 
 	return combinatios
 }
 
-func calculateFromHighest(invest float64) models.CombinationsData {
-	fromHighest := models.CombinationsData{}
+func assign(invest float64) models.CombinationsData {
+	data := models.CombinationsData{}
+	if invest < 300 {
+		return data
+	}
 
-	for {
-		if doRest(invest, constants.Amount700) {
-			invest = invest - constants.Amount700
-			fromHighest.CreditType700++
-		} else if doRest(invest, constants.Amount500) {
-			invest = invest - constants.Amount500
-			fromHighest.CreditType500++
-		} else if doRest(invest, constants.Amount300) {
-			invest = invest - constants.Amount300
-			fromHighest.CreditType300++
-		} else {
-			break
+	credit_type_300_max := int(invest / 300)
+	credit_type_500_max := int(invest / 500)
+	credit_type_700_max := int(invest / 700)
+	var combination int32
+
+	for i := 0; i <= credit_type_300_max; i++ {
+		for j := 0; j <= credit_type_500_max; j++ {
+			for k := 0; k <= credit_type_700_max; k++ {
+				combination = int32((300 * i) + (500 * j) + (700 * k))
+
+				if combination == int32(invest) {
+					data.CreditType300 = i
+					data.CreditType500 = j
+					data.CreditType700 = k
+					return data
+				}
+
+				if combination > int32(invest) {
+					break
+				}
+			}
 		}
 	}
 
-	return fromHighest
-}
-
-func calculateFromLowest(invest float64) models.CombinationsData {
-	fromLowest := models.CombinationsData{}
-
-	for {
-		if doRest(invest, constants.Amount300) {
-			invest = invest - constants.Amount300
-			fromLowest.CreditType300++
-		} else if doRest(invest, constants.Amount500) {
-			invest = invest - constants.Amount500
-			fromLowest.CreditType500++
-		} else if doRest(invest, constants.Amount700) {
-			invest = invest - constants.Amount700
-			fromLowest.CreditType700++
-		} else {
-			break
-		}
-	}
-
-	return fromLowest
-}
-
-func doRest(num1, num2 float64) bool {
-	result := (num1 - num2)
-	return result >= 0.0
+	return data
 }

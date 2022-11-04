@@ -21,7 +21,7 @@ type AssigmentRepository struct {
 
 func (repo AssigmentRepository) GetAssigment(AssigmentID string) (models.AssigmentData, error) {
 	t := time.Now()
-	var Assigment models.AssigmentData
+	var assigment models.AssigmentData
 	objectId, oErr := primitive.ObjectIDFromHex(AssigmentID)
 	if oErr != nil {
 		logger.Error("repositories", "GetAssigment", oErr.Error())
@@ -30,7 +30,7 @@ func (repo AssigmentRepository) GetAssigment(AssigmentID string) (models.Assigme
 	err := repo.MongoDB.Collection(constants.CollectionName).FindOne(
 		context.TODO(),
 		bson.D{{Key: "_id", Value: objectId}},
-	).Decode(&Assigment)
+	).Decode(&assigment)
 
 	if err != nil {
 		logger.Error("repositories", "GetAssigmentData", err.Error())
@@ -38,7 +38,7 @@ func (repo AssigmentRepository) GetAssigment(AssigmentID string) (models.Assigme
 	}
 
 	logger.Performance("repository", "GetAssigment", t)
-	return Assigment, nil
+	return assigment, nil
 }
 
 func (repo AssigmentRepository) CreateAssigment(data models.AssigmentData) error {
@@ -52,4 +52,33 @@ func (repo AssigmentRepository) CreateAssigment(data models.AssigmentData) error
 	logger.Performance("repository", "CreateAssigment", t)
 
 	return nil
+}
+
+func (repo AssigmentRepository) GetStatistics() (models.StatisticsData, error) {
+	t := time.Now()
+	statitics := models.StatisticsData{}
+
+	totalDocs, err := repo.MongoDB.Collection(constants.CollectionName).CountDocuments(
+		context.TODO(), bson.D{})
+
+	if err != nil {
+		logger.Error("repositories", "GetStatistics", err.Error())
+		return statitics, errors.HandleServiceError(err)
+	}
+
+	totalSuccess, err := repo.MongoDB.Collection(constants.CollectionName).CountDocuments(
+		context.TODO(),
+		bson.D{{Key: "noncombinated", Value: false}},
+	)
+
+	if err != nil {
+		logger.Error("repositories", "GetStatistics", err.Error())
+		return statitics, errors.HandleServiceError(err)
+	}
+
+	statitics.TotalAssignations = float32(totalDocs)
+	statitics.SuccessfulAssignations = float32(totalSuccess)
+
+	logger.Performance("repository", "GetStatistics", t)
+	return statitics, nil
 }
