@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/AlejandroAldana99/YoFio_API/config"
+	"github.com/AlejandroAldana99/YoFio_API/constants"
 	"github.com/AlejandroAldana99/YoFio_API/errors"
 	"github.com/AlejandroAldana99/YoFio_API/libs/logger"
 	"github.com/AlejandroAldana99/YoFio_API/models"
@@ -26,7 +27,7 @@ func (repo AssigmentRepository) GetAssigment(AssigmentID string) (models.Assigme
 		logger.Error("repositories", "GetAssigment", oErr.Error())
 		return models.AssigmentData{}, errors.HandleServiceError(oErr)
 	}
-	err := repo.MongoDB.Collection("Assigments").FindOne(
+	err := repo.MongoDB.Collection(constants.CollectionName).FindOne(
 		context.TODO(),
 		bson.D{{Key: "_id", Value: objectId}},
 	).Decode(&Assigment)
@@ -42,7 +43,7 @@ func (repo AssigmentRepository) GetAssigment(AssigmentID string) (models.Assigme
 
 func (repo AssigmentRepository) CreateAssigment(data models.AssigmentData) error {
 	t := time.Now()
-	_, err := repo.MongoDB.Collection("Assigments").InsertOne(context.TODO(), data)
+	_, err := repo.MongoDB.Collection(constants.CollectionName).InsertOne(context.TODO(), data)
 	if err != nil {
 		logger.Error("repositories", "CreateAssigment", err.Error())
 		return errors.HandleServiceError(err)
